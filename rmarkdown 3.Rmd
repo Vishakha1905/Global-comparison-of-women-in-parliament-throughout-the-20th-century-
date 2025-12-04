@@ -1,0 +1,121 @@
+---
+title: "Global comparison of women in parliament throughout the 20th century"
+author: "Vishakha Chunilal"
+date: "2025-12-01"
+output: 
+  html_document: 
+    theme: cosmo
+    highlight: tango
+    toc: true
+    toc_float: true
+---
+
+```{r echo=FALSE, fig.align='center', out.width='\\linewidth'}
+knitr::include_graphics("World Refugee Day Accessible Website in Light Blue Yellow Dark Green Bold Photocentric Style.png")
+```
+
+# **Data Origins**
+
+For this project, I wanted to create a visual presentation of the number of women in parliament throughout the years across different countries. The raw data was taken from a website called [Our World In Data](https://ourworldindata.org/grapher/countries-by-share-of-women-in-parliament) which focuses specifically on the percentage of women who hold seats in lower or single chambers of legislation. This research draws on the evaluations from roughly 3,500 country experts in assessing political institutions and protection of human rights. For more information, please refer to the citation of this study is: V-Dem (2025) – processed by Our World in Data.
+
+The "Countries by share of women in parliament" dataset provides statistics from 1900 to 2024 and covers six continents: Africa, Asia, Europe, North America, Oceania and South America. The dataset is comprised of the years, continents and seven columns entailing the number of counties with a certain statistic of women in parliament.
+
+# **Data Preparation**
+
+```{r setup-packages, message=FALSE, warning=FALSE}
+# List of required packages
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+library(gganimate)
+```
+
+Importing data preparation
+
+```{r, message=FALSE, warning=FALSE}
+# Load data into R
+countries_by_share_of_women_in_parliament <- read_csv("countries-by-share-of-women-in-parliament.csv")
+```
+
+To see the changes I have made to the dataset, I will provide the first ten rows of the raw data.
+```{r}
+head(countries_by_share_of_women_in_parliament, 10)
+```
+
+Below is an image of the raw data
+
+![](images/Screenshot%202025-12-03%20120319.png)
+
+I was aware that the data was quite hard to read, I took steps to change this. For example as shown below, I changed the names of columns to make it easier to read. I also removed the 'Code' column as this was not needed in the research. The codes below provide steps I took to make these changes.
+
+```{r, message=FALSE, warning=FALSE, results=FALSE}
+# Rename columns so they are easier to read
+df <- read.csv("countries-by-share-of-women-in-parliament.csv")
+summary(df) 
+colnames(df)[colnames(df) == "Number.of.countries.with.0.10..women.in.parliament"] <- "NoC0_10"
+colnames(df)[colnames(df) == "Number.of.countries.with.10.20..women.in.parliament"] <-"NoC10_20"
+colnames(df)[colnames(df) == "Number.of.countries.with.20.30..women.in.parliament"] <- "NoC20_30"
+colnames(df)[colnames(df) == "Number.of.countries.with.30.40..women.in.parliament"] <- "NoC30_40"
+colnames(df)[colnames(df) == "Number.of.countries.with.40.50..women.in.parliament"] <- "NoC40_50"
+colnames(df)[colnames(df) == "Number.of.countries.with.50...women.in.parliament"] <- "NoC50+"
+colnames(df)[colnames(df) == "Number.of.countries.with.no.women.in.parliament"] <- "No.Women.In.Parliament"
+```
+
+```{r}
+#Get rid of the code column
+df <- subset(df, select = -Code)
+View(df)
+
+#Rename the dataset from "df" to "women_in_par" to make it easier to understand
+women_in_par <- df
+rm(df)
+```
+
+# **Visualisation**
+
+I used a line plot to display the longitudinal trends of females in parliament.
+
+```{r, message=FALSE, warning=FALSE}
+#First line plot
+ggplot(women_in_par, aes(x = Year, 
+                 y = No.Women.In.Parliament, 
+                 color = Entity, 
+                 group = Entity)) +
+  geom_line(size = 1) +
+  labs(title = "Women in Parliament by Continent Over Time",
+       x = "Year",
+       y = "Number of Women in Parliament",
+       color = "Entity") +
+  theme_minimal()
+
+```
+
+The initial graph did illustrate the trends however, I felt that bar charts would offer a better understanding of the data. The bar charts below conveyed women in parliament across specific years and countries in a more presentable way.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+ggplot(women_in_par, aes(x = Year,
+                         y = No.Women.In.Parliament,
+                         fill = Entity)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ Entity, scales = "free_y") +
+  labs(title = "Women in parliament by continent over time",
+       x = "Year",
+       y = "NO.Women.In.Parliament") +
+  theme_minimal()
+```
+
+For my final graph I wanted to go out of my comfort zone and try to animate a graph. I found that for this specific dataset, an animated graph would help understand the data better as it looks at a topic over time. The code I used to make said dataset is shown below.
+
+```{}
+```
+
+library(ggplot2) library(gganimate)
+
+p \<- ggplot(women_in_par, aes(x = Year, y = No.Women.In.Parliament, color = Entity, group = Entity))
+
+animate(animated, fps = 4, width = 800, height = 500)
+
+# **Summary**
