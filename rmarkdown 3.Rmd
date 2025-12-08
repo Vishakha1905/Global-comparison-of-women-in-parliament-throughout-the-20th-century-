@@ -29,6 +29,7 @@ library(ggplot2)
 library(dplyr)
 library(magrittr)
 library(gganimate)
+library(gifski)
 ```
 
 Importing data preparation
@@ -39,6 +40,7 @@ countries_by_share_of_women_in_parliament <- read_csv("countries-by-share-of-wom
 ```
 
 To see the changes I have made to the dataset, I will provide the first ten rows of the raw data.
+
 ```{r}
 head(countries_by_share_of_women_in_parliament, 10)
 ```
@@ -47,29 +49,30 @@ Below is an image of the raw data
 
 ![](images/Screenshot%202025-12-03%20120319.png)
 
+```{r}
+#renaming the dataset in the Global Environment to make it easier to read
+women_data <- countries_by_share_of_women_in_parliament
+```
+
 I was aware that the data was quite hard to read, I took steps to change this. For example as shown below, I changed the names of columns to make it easier to read. I also removed the 'Code' column as this was not needed in the research. The codes below provide steps I took to make these changes.
 
 ```{r, message=FALSE, warning=FALSE, results=FALSE}
 # Rename columns so they are easier to read
-df <- read.csv("countries-by-share-of-women-in-parliament.csv")
-summary(df) 
-colnames(df)[colnames(df) == "Number.of.countries.with.0.10..women.in.parliament"] <- "NoC0_10"
-colnames(df)[colnames(df) == "Number.of.countries.with.10.20..women.in.parliament"] <-"NoC10_20"
-colnames(df)[colnames(df) == "Number.of.countries.with.20.30..women.in.parliament"] <- "NoC20_30"
-colnames(df)[colnames(df) == "Number.of.countries.with.30.40..women.in.parliament"] <- "NoC30_40"
-colnames(df)[colnames(df) == "Number.of.countries.with.40.50..women.in.parliament"] <- "NoC40_50"
-colnames(df)[colnames(df) == "Number.of.countries.with.50...women.in.parliament"] <- "NoC50+"
-colnames(df)[colnames(df) == "Number.of.countries.with.no.women.in.parliament"] <- "No.Women.In.Parliament"
+women_data <- read.csv("countries-by-share-of-women-in-parliament.csv")
+summary(women_data) 
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.0.10..women.in.parliament"] <- "NoC0_10"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.10.20..women.in.parliament"] <-"NoC10_20"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.20.30..women.in.parliament"] <- "NoC20_30"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.30.40..women.in.parliament"] <- "NoC30_40"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.40.50..women.in.parliament"] <- "NoC40_50"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.50...women.in.parliament"] <- "NoC50+"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.no.women.in.parliament"] <- "No.Women.In.Parliament"
 ```
 
 ```{r}
 #Get rid of the code column
-df <- subset(df, select = -Code)
-View(df)
-
-#Rename the dataset from "df" to "women_in_par" to make it easier to understand
-women_in_par <- df
-rm(df)
+women_data<- women_data %>% 
+  select(-Code)
 ```
 
 # **Visualisation**
@@ -78,10 +81,12 @@ I used a line plot to display the longitudinal trends of females in parliament.
 
 ```{r, message=FALSE, warning=FALSE}
 #First line plot
-ggplot(women_in_par, aes(x = Year, 
-                 y = No.Women.In.Parliament, 
-                 color = Entity, 
-                 group = Entity)) +
+library(ggplot2)
+library(dplyr)
+ggplot(women_data, aes(x = Year, 
+                         y = No.Women.In.Parliament, 
+                         color = Entity, 
+                         group = Entity)) +
   geom_line(size = 1) +
   labs(title = "Women in Parliament by Continent Over Time",
        x = "Year",
@@ -96,7 +101,7 @@ The initial graph did illustrate the trends however, I felt that bar charts woul
 ```{r}
 library(ggplot2)
 library(dplyr)
-ggplot(women_in_par, aes(x = Year,
+ggplot(women_data, aes(x = Year,
                          y = No.Women.In.Parliament,
                          fill = Entity)) +
   geom_bar(stat = "identity") +
@@ -107,15 +112,10 @@ ggplot(women_in_par, aes(x = Year,
   theme_minimal()
 ```
 
-For my final graph I wanted to go out of my comfort zone and try to animate a graph. I found that for this specific dataset, an animated graph would help understand the data better as it looks at a topic over time. The code I used to make said dataset is shown below.
+For my final graph I wanted to go out of my comfort zone and try to animate a graph. I found that for this specific dataset, an animated graph would help understand the data better as it looks at a topic over time. The code I used to make said dataset is shown below. CODE IS NTO WORKINF RN
 
-```{}
-```
-
-library(ggplot2) library(gganimate)
-
-p \<- ggplot(women_in_par, aes(x = Year, y = No.Women.In.Parliament, color = Entity, group = Entity))
-
-animate(animated, fps = 4, width = 800, height = 500)
+![](gif.R){width="721"}
 
 # **Summary**
+
+For my final graph I wanted to go out of my comfort zone and try to animate a graph. I found that for this specific dataset, an animated graph would help understand the data better as it looks at a topic over time. The code I used to make said dataset is shown below.
