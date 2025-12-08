@@ -7,5 +7,31 @@ This project analyses the comparison of women in parliament throughout the 20th 
 
 Global comparison of women in parliament throughout the 20th century
 
-# Project files
+# Required software for this project
+
+-   R
+
+-   RStudio
+
+-   R Markdown or Quarto (This project used R markdown)
+
+-   Github
+
+# Required packages
+
+-   library(tidyverse)
+
+-   library(ggplot2)
+
+-   library(dplyr)
+
+-   library(magrittr)
+
+-   library(gganimate)
+
+-   library(gifski)
+
+# Data Source
+
+[Our World In Data](https://ourworldindata.org/grapher/countries-by-share-of-women-in-parliament)
 
