@@ -8,3 +8,4 @@ This project analyses the comparison of women in parliament throughout the 20th 
 Global comparison of women in parliament throughout the 20th century
 
 # Project files
+[Raw data] (countries-by-share-of-women-in-parliament.csv)
