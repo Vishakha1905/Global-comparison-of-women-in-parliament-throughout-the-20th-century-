@@ -8,4 +8,4 @@ This project analyses the comparison of women in parliament throughout the 20th 
 Global comparison of women in parliament throughout the 20th century
 
 # Project files
-[rmarkdown] (rmarkdown 3.Rmd)
+
