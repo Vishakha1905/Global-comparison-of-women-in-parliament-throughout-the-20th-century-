@@ -36,6 +36,7 @@ Global comparison of women in parliament throughout the 20th century
 [Our World In Data](https://ourworldindata.org/grapher/countries-by-share-of-women-in-parliament)
 
 # What these files mean:
-The Rscrip is full of the code that I used to change the dataset and make the graphs
-The Rmarkdown is the final version of my project
+- The Rscrip is full of the code that I used to change the dataset and make the graphs
+- The Rmarkdown is the final version of my project
+- The 'countries-by-share-of-women-in-parliament.csv' is the raw data that I used for this project 
 
