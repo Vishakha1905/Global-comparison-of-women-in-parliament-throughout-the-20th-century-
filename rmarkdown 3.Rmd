@@ -1,0 +1,184 @@
+---
+title: "Global comparison of women in parliament throughout the 20th century"
+author: "Vishakha Chunilal"
+date: "2025-12-01"
+output: 
+  html_document: 
+    toc: true
+    toc_float: true
+---
+
+```{css, echo=FALSE}
+body {
+  background-color: lightblue; /* Change this to your desired color */
+}
+
+```
+
+![](images/WORLDR~1.PNG)
+
+# **1. Data Origins**
+
+For this project, I wanted to create a visual presentation of the number of women in parliament throughout the years across different countries. The raw data was taken from a website called [Our World In Data](https://ourworldindata.org/grapher/countries-by-share-of-women-in-parliament) which focuses specifically on the percentage of women who hold seats in lower or single chambers of legislation. This research draws on the evaluations from roughly 3,500 country experts in assessing political institutions and protection of human rights. For more information, please refer to the citation of this study is: V-Dem (2025) – processed by Our World in Data.
+The "Countries by share of women in parliament" dataset provides statistics from 1900 to 2024 and covers six continents: Africa, Asia, Europe, North America, Oceania and South America. The dataset is comprised of the years, continents and seven columns entailing the number of counties with a certain statistic of women in parliament.
+
+# **1.a. Research question**
+Global comparison of women in parliament throughout the 20th century
+
+# **2. Data Preparation**
+
+# 2.0.1 Importing data 
+```{r, message=FALSE, warning=FALSE}
+# Load data into R
+library(readr)
+countries_by_share_of_women_in_parliament <- read_csv("countries-by-share-of-women-in-parliament.csv")
+View(countries_by_share_of_women_in_parliament)
+```
+
+# 2.0.2 Required packages
+```{r setup-packages, message=FALSE, warning=FALSE}
+# List of required packages
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+library(gganimate)
+library(gifski)
+```
+
+# 2.0.3 Remove the columns that are not needed for the visualisation
+For this visualization I made two data sets from the original raw data. I will explain more throughout the visualization. Right now we are altering the raw dataset ("countries_by_share_of_women_in_parliament").
+```{r}
+#renaming the dataset in the Global Environment to make it easier to read
+women_data <- countries_by_share_of_women_in_parliament
+```
+
+# 2.0.4 Changing column names
+I was aware that the data was quite hard to read, I took steps to change this. I changed the names of columns to make it easier to read. The codes below show how I made these changes.
+```{r, message=FALSE, warning=FALSE, results=FALSE}
+# Rename columns so they are easier to read
+women_data <- read.csv("countries-by-share-of-women-in-parliament.csv")
+summary(women_data) 
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.0.10..women.in.parliament"] <- "NoC0_10"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.10.20..women.in.parliament"] <-"NoC10_20"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.20.30..women.in.parliament"] <- "NoC20_30"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.30.40..women.in.parliament"] <- "NoC30_40"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.40.50..women.in.parliament"] <- "NoC40_50"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.50...women.in.parliament"] <- "NoC50+"
+colnames(women_data)[colnames(women_data) == "Number.of.countries.with.no.women.in.parliament"] <- "No.Women.In.Parliament"
+```
+
+I then removed the 'Code' column as this was not needed for this visualization..
+
+```{r}
+#Get rid of the code column
+women_data<- women_data %>% 
+  select(-Code)
+```
+
+# 2.0.5 Rows of the raw data
+To see the changes I have made to the dataset, I will provide the first ten rows of the raw data.
+
+```{r}
+head(countries_by_share_of_women_in_parliament, 10)
+```
+
+# 2.0.6 Further alteration on the dataset
+I made some further changes to my dataset after reviewing the completed visualizations and realized that it would be better if I combined the six percentage columns into one. The code below is the steps that I took to make these changes. The new dataset is called "women_data_long" and it was used in the first and second graph. The final animated graph uses "women_data". 
+
+```{r}
+women_data_long <- women_data %>%
+  pivot_longer(
+    cols = c(NoC0_10, NoC10_20, NoC20_30, NoC30_40, NoC40_50, `NoC50+`), 
+    names_to = "Percentage",      
+    values_to = "Countries"        
+  )
+```
+
+```{r}
+#First ten rows of the "women_data_long" dataset
+head(women_data_long, 10)
+```
+
+# **3. Visualisation**
+
+The graph below is the first graph I produced with this dataset, as you can see, it shows the distribution of women in parliament throughout the years and the total number of countries.
+```{r}
+ggplot(women_data_long, 
+       aes(x = Year, 
+           y = Countries, 
+           fill = Percentage)) + 
+  
+  geom_bar(stat = "identity") +
+  labs(title = "Global comparison of women in parliament throughout the 20th century",
+       y = "Countries",
+       color = "Percentage") +
+  theme_minimal()
+```
+
+To enhance the visualization of the dataset I decided to use multiple graphs to illustrate the distribution of women in parliament across different continents. I found that bar charts could effectively show the data in comparison to the graph above and it provides more in depth information. 
+```{r}
+ggplot(women_data_long, 
+       aes(x = Year, 
+           y = Countries, 
+           fill = Percentage)) + # Use 'fill' to define the stacked layers
+  
+  # 1. Add the stacked area geometry
+  geom_area(alpha = 0.8, color = "black", linewidth = 0.1) +
+  
+  # 2. Separate the chart into different panels for each continent
+  facet_wrap(~ Entity, scales = "free_y") + 
+  
+  labs(title = "Global comparison of women in parliament throughout the 20th century",
+       x = "Year",
+       y = "Number of Countries",
+       fill = "Percentage of Women(%)") +
+  
+  theme_minimal()
+```
+
+
+For my final graph I wanted to go out of my comfort zone and try to animate something. The code I used to make said animation is shown below. As this code does look quite confusing I will explain what it does using comments within the code
+
+```{r, message=FALSE, warning=FALSE, unnamed-chunk-12, fig.height=2.5, fig.width=4, dev='ragg_png'}
+#First make sure that you have these packages downloaded, they will be needed for the animation
+library(ggplot2)
+library(gganimate)
+library(ggplot2)
+library(dplyr)
+#This is code is providing the base of the graph
+p <- ggplot(
+  women_data_long,
+  aes( x = Year,
+    y = No.Women.In.Parliament, # The Y axis is the number of women not in parliament
+    color = Entity,
+    group = Entity)) +
+  geom_line(size = 0.2) +
+  labs(
+    title = "Women in Parliament by Continent Over Time",
+    subtitle = "Year: {frame_along}",
+    x = "Year",
+    y = "Number of countries with no women in Parliament",
+    color = "Entity") +
+  theme_minimal(base_size = 7) # This is crucial when uploading to Rmarkdown, this will adjust the graph and make it easier to read 
+#The code below is what creates the animation
+animated_plot <- p + 
+  transition_reveal(Year)
+animate(animated_plot, 
+        fps = 4, 
+        width = 800, 
+        height = 500, 
+        units = "px",
+        renderer = gifski_renderer()) 
+```
+
+# **4. Summary**
+
+# 4.0.1 Interpretation of my final graph 
+This graph shows that there is a decline in the number of countries with no women in Parliament. When making this graph, there as a lot of trial and error but it worked out in the end. I felt that an animation to show the distribution throughout the years would help the reader understand the data better.
+
+# 4.0.2 Follow ups
+Although the data is very useful in showing that more women are now in parliament, suggesting an increase in equality within parliament, it would be good to research why there is this increase. Of course one key contributor to this increase is the strengthening of equality within legislation over the years, however the dataset does not identify specific reasons for the increase. Other measures can be used to investigate this. 
+
+# 4.0.3 Reflection
+I think I chose a very good dataset for this project. It was not too hard to clean up, I only had to remove a few columns however, as I started the project I realized that there was a lot of trial and error and the data was quite hard to understand as there was a lot in it. Thankfully I resolved this issue. Overall I did find myself enjoying the project and I'm proud that I was able to make an animated graph as before starting the project, I did not think that was possible. 
